@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="gui.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>🛡️ CyberSecureSim </h1>
+    <h2>Firewall + Steganography Security Simulator</h2>
+    <form action="/login" method="post">
+    <h2>Login Panel</h2>
+
+    <!-- Admin Login -->
+    <div class="admin-section">
+      <h3>Admin Login</h3>
+      <label for="admin-user">Username:</label>
+      <input type="text" id="admin-user" name="admin_user" placeholder="Admin username">
+
+      <label for="admin-pass">Password:</label>
+      <input type="password" id="admin-pass" name="admin_pass" placeholder="Admin password">
+    </div>
+
+    <!-- User Login -->
+    <div class="user-section">
+      <h3>User Login</h3>
+      <label for="user-name">Username:</label>
+      <input type="text" id="user-name" name="user_name" placeholder="User username">
+
+      <label for="user-ip">IP Address:</label>
+      <input type="text" id="user-ip" name="user_ip" placeholder="e.g. 192.168.1.10">
+    </div>
+
+    <input type="submit" value="Login">
+  </form>
+</body>
+</html>
