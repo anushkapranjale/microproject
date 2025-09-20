@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="gui.css">
+    <link rel="stylesheet" href="img_encode.py">
+    <link rel="stylesheet" href="img_decode.py">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSecureSim</title>
+    <style>
+        .hidden { display: none; }
+        .menu-btn {
+            padding: 12px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .stego-btn { background-color: #4CAF50; color: white; }
+        .firewall-btn { background-color: #FF9800; color: white; }
+        .logout-btn { background-color: #F44336; color: white; }
+        .menu-btn:hover { opacity: 0.85; transform: scale(1.05); }
+        .module-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛡 CyberSecureSim </h1>
+    <h2>Firewall + Steganography Security Simulator</h2>
+
+    <!-- Login Form -->
+    <form id="loginForm" action="/login" method="post">
+        <h2>Login Panel</h2>
+
+        <!-- Admin Login -->
+        <div class="admin-section">
+            <h3>Admin Login</h3>
+            <label for="admin-user">Username:</label>
+            <input type="text" id="admin-user" name="admin_user" placeholder="Admin username">
+
+            <label for="admin-pass">Password:</label>
+            <input type="password" id="admin-pass" name="admin_pass" placeholder="Admin password">
+        </div>
+
+        <!-- User Login -->
+        <div class="user-section">
+            <h3>User Login</h3>
+            <label for="user-name">Username:</label>
+            <input type="text" id="user-name" name="user_name" placeholder="User username">
+
+            <label for="user-ip">IP Address:</label>
+            <input type="text" id="user-ip" name="user_ip" placeholder="e.g. 192.168.1.10">
+        </div>
+
+        <input type="submit" value="Login">
+    </form>
+
+    <!-- Dashboard Menu -->
+    <div id="dashboard" class="hidden">
+        <h2 id="roleHeading"></h2>
+        <button class="menu-btn stego-btn" onclick="showStego()">🖼 Image Steganography</button>
+        <button class="menu-btn firewall-btn" onclick="showFirewall()">🔥 Firewall Simulator</button>
+        <button class="menu-btn logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <!-- Image Steganography Module -->
+    <div id="stegoModule" class="hidden module-box">
+        <h3>🖼 Image Steganography</h3>
+        <label for="stego-file">Upload Image:</label>
+        <input type="file" id="stego-file" accept="image/*"><br><br>
+
+        <div id="encodeSection" class="hidden">
+            <label for="secret-msg">Secret Message to Encode:</label>
+            <input type="text" id="secret-msg" placeholder="Enter secret text"><br><br>
+        </div>
+
+        <div>
+            <h4>🔎 Decode Hidden Message</h4>
+            <button>Decode</button>
+            <p id="decoded-output">Decoded message will appear here...</p>
+        </div>
+    </div>
+
+    <!-- Firewall Module -->
+    <div id="firewallModule" class="hidden module-box">
+        <h3>🔥 Firewall Simulator</h3>
+        <div id="adminFirewall" class="hidden">
+            <label for="firewall-rule">Add Firewall Rule:</label>
+            <input type="text" id="firewall-rule" placeholder="e.g. Block port 22">
+        </div>
+
+        <div id="userFirewall" class="hidden">
+            <label for="test-port">Test Port Access:</label>
+            <input type="number" id="test-port" placeholder="Enter port number">
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const dashboard = document.getElementById("dashboard");
+        const roleHeading = document.getElementById("roleHeading");
+
+        const stegoModule = document.getElementById("stegoModule");
+        const firewallModule = document.getElementById("firewallModule");
+
+        const encodeSection = document.getElementById("encodeSection");
+        const adminFirewall = document.getElementById("adminFirewall");
+        const userFirewall = document.getElementById("userFirewall");
+
+        let role = "";
+
+        loginForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            let adminUser = document.getElementById("admin-user").value;
+            let adminPass = document.getElementById("admin-pass").value;
+            let userName = document.getElementById("user-name").value;
+            let userIp = document.getElementById("user-ip").value;
+
+            if (adminUser && adminPass) {
+                role = "admin";
+                roleHeading.textContent = "🔑 Admin Dashboard";
+            } 
+            else if (userName && userIp) {
+                role = "user";
+                roleHeading.textContent = "👥 User Dashboard";
+            } 
+            else {
+                alert("Please enter valid login details.");
+                return;
+            }
+
+            loginForm.classList.add("hidden");
+            dashboard.classList.remove("hidden");
+        });
+
+        function showStego() {
+            firewallModule.classList.add("hidden");
+            stegoModule.classList.remove("hidden");
+            if (role === "admin") {
+                encodeSection.classList.remove("hidden");
+            } else {
+                encodeSection.classList.add("hidden");
+            }
+        }
+
+        function showFirewall() {
+            stegoModule.classList.add("hidden");
+            firewallModule.classList.remove("hidden");
+            if (role === "admin") {
+                adminFirewall.classList.remove("hidden");
+                userFirewall.classList.add("hidden");
+            } else {
+                userFirewall.classList.remove("hidden");
+                adminFirewall.classList.add("hidden");
+            }
+        }
+
+        function logout() {
+            role = "";
+            dashboard.classList.add("hidden");
+            stegoModule.classList.add("hidden");
+            firewallModule.classList.add("hidden");
+            loginForm.classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>

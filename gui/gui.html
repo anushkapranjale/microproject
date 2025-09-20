@@ -4,35 +4,70 @@
     <link rel="stylesheet" href="gui.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CyberSecureSim</title>
 </head>
 <body>
     <h1>🛡️ CyberSecureSim </h1>
     <h2>Firewall + Steganography Security Simulator</h2>
-    <form action="/login" method="post">
-    <h2>Login Panel</h2>
+    <form id="loginForm">
+        <h2>Login Panel</h2>
 
-    <!-- Admin Login -->
-    <div class="admin-section">
-      <h3>Admin Login</h3>
-      <label for="admin-user">Username:</label>
-      <input type="text" id="admin-user" name="admin_user" placeholder="Admin username">
+        <!-- Admin Login -->
+        <div class="admin-section">
+            <h3>Admin Login</h3>
+            <label for="admin-user">Username:</label>
+            <input type="text" id="admin-user" name="admin_user" placeholder="Admin username">
+            <label for="admin-pass">Password:</label>
+            <input type="password" id="admin-pass" name="admin_pass" placeholder="Admin password">
+        </div>
 
-      <label for="admin-pass">Password:</label>
-      <input type="password" id="admin-pass" name="admin_pass" placeholder="Admin password">
-    </div>
+        <!-- User Login -->
+        <div class="user-section">
+            <h3>User Login</h3>
+            <label for="user-name">Username:</label>
+            <input type="text" id="user-name" name="user_name" placeholder="User username">
+            <label for="user-ip">IP Address:</label>
+            <input type="text" id="user-ip" name="user_ip" placeholder="e.g. 192.168.1.10">
+        </div>
 
-    <!-- User Login -->
-    <div class="user-section">
-      <h3>User Login</h3>
-      <label for="user-name">Username:</label>
-      <input type="text" id="user-name" name="user_name" placeholder="User username">
+        <input type="submit" value="Login">
+    </form>
 
-      <label for="user-ip">IP Address:</label>
-      <input type="text" id="user-ip" name="user_ip" placeholder="e.g. 192.168.1.10">
-    </div>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event){
+            event.preventDefault(); // Stop the form from submitting
 
-    <input type="submit" value="Login">
-  </form>
+            const adminUser = document.getElementById("admin-user").value.trim();
+            const adminPass = document.getElementById("admin-pass").value.trim();
+            const userName = document.getElementById("user-name").value.trim();
+            const userIp = document.getElementById("user-ip").value.trim();
+
+            // Admin login
+            if(adminUser === "admin" && adminPass === "1234"){
+                window.location.href = "admin.html";
+                return;
+            }
+
+            // User login validation
+            const validUsers = ["user1","user2","user3"]; // Add valid usernames here
+            const ipPattern = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
+
+            if(userName !== "" && userIp !== ""){
+                if(!validUsers.includes(userName)){
+                    alert("❌ Invalid username! Only valid users are allowed.");
+                    return;
+                }
+                if(!ipPattern.test(userIp)){
+                    alert("❌ Invalid IP address! Enter a valid IPv4 address.");
+                    return;
+                }
+                // Successful user login
+                window.location.href = "user.html";
+            }
+            else{
+                alert("❌ Please fill in all required fields.");
+            }
+        });
+    </script>
 </body>
 </html>

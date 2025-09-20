@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Steganography Checker</title>
+  <link rel="stylesheet" href="gui.css">
+</head>
+<body>
+  <h1>🔍 Steganography LSB Checker</h1>
+
+  <div class="container">
+    <h2>Upload Image to Check</h2>
+    <input type="file" id="fileInput" accept="image/*"><br>
+    <button id="checkBtn" disabled>Check Image</button>
+    <p id="result">No image uploaded yet.</p>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const checkBtn = document.getElementById("checkBtn");
+    const result = document.getElementById("result");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let img = new Image();
+
+    fileInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        checkBtn.disabled = false;
+      };
+      img.src = url;
+    });
+
+    checkBtn.addEventListener("click", () => {
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+      let bits = "";
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        bits += (pixels[i] & 1);     // R
+        bits += (pixels[i+1] & 1);   // G
+        bits += (pixels[i+2] & 1);   // B
+      }
+
+      const marker = "1111111111111110"; // End marker
+      const endIndex = bits.indexOf(marker);
+      if (endIndex === -1) {
+        result.innerHTML = "❌ No hidden message found.";
+        return;
+      }
+
+      const msgBits = bits.substring(0, endIndex);
+      let message = "";
+      for (let i = 0; i < msgBits.length; i += 8) {
+        message += String.fromCharCode(parseInt(msgBits.substring(i, i+8), 2));
+      }
+
+      result.innerHTML = "✅ Hidden Message: " + message;
+    });
+  </script>
+</body>
+</html>

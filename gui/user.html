@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - CyberSecureSim</title>
+  <link rel="stylesheet" href="gui.css">
+</head>
+<body>
+  <h1>👤 User Dashboard</h1>
+  <h2>Welcome, User!</h2>
+  
+  <nav>
+    <ul>
+      <li><a href="user_stego.html">Steganography Simulator</a></li>
+      <li><a href="#" id="logoutBtn">Logout</a></li>
+    </ul>
+  </nav>
+
+  <script>
+    // Logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", function(){
+      window.location.href = "gui.html"; 
+    });
+  </script>
+</body>
+</html>

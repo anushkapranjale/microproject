@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Steganography Tool</title>
+  <link rel="stylesheet" href="gui.css">
+</head>
+<body>
+  <h1>🖼️ Admin Steganography Tool</h1>
+
+  <div class="container">
+    <!-- Embed Message Section -->
+    <h2>Embed Secret Message</h2>
+    <input type="file" id="encodeFile" accept="image/*"><br>
+    <textarea id="encodeMessage" rows="4" cols="50" placeholder="Enter secret message"></textarea><br>
+    <button id="encodeBtn" disabled>Embed Message</button><br>
+    <canvas id="encodeCanvas" style="border:1px solid #ccc; max-width:400px;"></canvas><br>
+    <a id="downloadLink" style="display:none;" download="stego_image.png">⬇️ Download Stego Image</a>
+
+    <hr>
+
+    <!-- Check Message Section -->
+    <h2>Check Hidden Message</h2>
+    <input type="file" id="decodeFile" accept="image/*"><br>
+    <button id="decodeBtn" disabled>Check Image</button>
+    <p id="result">No image uploaded yet.</p>
+    <canvas id="decodeCanvas" style="border:1px solid #ccc; max-width:400px;"></canvas>
+  </div>
+
+  <script>
+    // Helper functions
+    function textToBinary(text){
+      return text.split('').map(c => c.charCodeAt(0).toString(2).padStart(8,'0')).join('');
+    }
+    function binaryToText(bin){
+      let result = '';
+      for(let i=0;i<bin.length;i+=8){
+        result += String.fromCharCode(parseInt(bin.slice(i,i+8),2));
+      }
+      return result;
+    }
+
+    // ---------- EMBED MESSAGE ----------
+    const encodeFile = document.getElementById("encodeFile");
+    const encodeMessage = document.getElementById("encodeMessage");
+    const encodeBtn = document.getElementById("encodeBtn");
+    const encodeCanvas = document.getElementById("encodeCanvas");
+    const encodeCtx = encodeCanvas.getContext("2d");
+    const downloadLink = document.getElementById("downloadLink");
+    let encodeImg = new Image();
+
+    encodeFile.addEventListener("change", e=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      encodeImg.onload = () => {
+        encodeCanvas.width = encodeImg.width;
+        encodeCanvas.height = encodeImg.height;
+        encodeCtx.drawImage(encodeImg,0,0);
+        encodeBtn.disabled = false;
+      }
+      encodeImg.src = url;
+    });
+
+    encodeBtn.addEventListener("click", ()=>{
+      const message = encodeMessage.value;
+      if(!message){
+        alert("Enter a message to embed!");
+        return;
+      }
+
+      const imgData = encodeCtx.getImageData(0,0,encodeCanvas.width,encodeCanvas.height);
+      const pixels = imgData.data;
+      const binaryMsg = textToBinary(message) + "1111111111111110"; // End marker
+
+      let dataIndex = 0;
+      for(let i=0;i<pixels.length;i+=4){
+        if(dataIndex<binaryMsg.length){
+          pixels[i]   = (pixels[i] & 254) | parseInt(binaryMsg[dataIndex++]); // R
+        }
+        if(dataIndex<binaryMsg.length){
+          pixels[i+1] = (pixels[i+1] & 254) | parseInt(binaryMsg[dataIndex++]); // G
+        }
+        if(dataIndex<binaryMsg.length){
+          pixels[i+2] = (pixels[i+2] & 254) | parseInt(binaryMsg[dataIndex++]); // B
+        }
+      }
+
+      encodeCtx.putImageData(imgData,0,0);
+      downloadLink.href = encodeCanvas.toDataURL("image/png");
+      downloadLink.style.display = "inline-block";
+    });
+
+    // ---------- CHECK MESSAGE ----------
+    const decodeFile = document.getElementById("decodeFile");
+    const decodeBtn = document.getElementById("decodeBtn");
+    const result = document.getElementById("result");
+    const decodeCanvas = document.getElementById("decodeCanvas");
+    const decodeCtx = decodeCanvas.getContext("2d");
+    let decodeImg = new Image();
+
+    decodeFile.addEventListener("change", e=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      decodeImg.onload = () => {
+        decodeCanvas.width = decodeImg.width;
+        decodeCanvas.height = decodeImg.height;
+        decodeCtx.drawImage(decodeImg,0,0);
+        decodeBtn.disabled = false;
+      }
+      decodeImg.src = url;
+    });
+
+    decodeBtn.addEventListener("click", ()=>{
+      const imgData = decodeCtx.getImageData(0,0,decodeCanvas.width,decodeCanvas.height);
+      const pixels = imgData.data;
+      let bits = "";
+
+      for(let i=0;i<pixels.length;i+=4){
+        bits += (pixels[i] & 1);
+        bits += (pixels[i+1] & 1);
+        bits += (pixels[i+2] & 1);
+      }
+
+      const marker = "1111111111111110";
+      const endIndex = bits.indexOf(marker);
+      if(endIndex===-1){
+        result.innerHTML = "❌ No hidden message found.";
+        return;
+      }
+
+      const msgBits = bits.substring(0,endIndex);
+      const message = binaryToText(msgBits);
+      result.innerHTML = "✅ Hidden Message: " + message;
+    });
+  </script>
+</body>
+</html>
