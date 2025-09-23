@@ -1,4 +1,0 @@
-[2025-07-17 20:06:00.001840] u1 - Image Upload - ALLOWED - Safe Content
-[2025-07-17 20:06:31.666404] u1 - Image Upload - ALLOWED - Safe Content
-[2025-07-17 20:06:31.708434] u1 - File Upload - BLOCKED - Dangerous file type
-[2025-07-18 10:30:04.058796] 1 - File Upload - BLOCKED - Dangerous file type
